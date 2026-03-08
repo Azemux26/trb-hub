@@ -1,59 +1,59 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🔍 TRB-HUB: Document Management System
+> **Current Status:** Phase 2 - Automated Validation & OCR Integration (Completed)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen dokumen Taruna yang fokus pada integritas data dan verifikasi otomatis menggunakan **Tesseract OCR**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Latest Progress: Automated Document Validation
+Saat ini, aplikasi telah berhasil mengimplementasikan sistem validasi otomatis pada modul **Upload Dokumen Taruna**. Sistem tidak hanya menyimpan file, tetapi juga "membaca" isi dokumen untuk memastikan keasliannya.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### ✅ Fitur yang Sudah Berjalan:
+- **Zero-Disk OCR**: Proses pembacaan teks dilakukan di memori (stdout) untuk menghindari limitasi izin akses folder pada Windows.
+- **Precision Scoring**: Implementasi ekstraksi data `hOCR` untuk mendapatkan skor akurasi asli dari mesin Tesseract (bukan angka statis).
+- **Multi-Format Processing**: Mendukung pemrosesan otomatis file PDF melalui integrasi Ghostscript dan Imagick.
+- **Smart UI/UX Feedback**: Antarmuka dinamis yang memberikan peringatan kepada Taruna jika hasil scan buram atau keyword tidak ditemukan.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Environment Setup (Required for This Progress)
+Karena aplikasi ini sudah menggunakan engine eksternal, setup berikut **wajib** dilakukan agar fitur validasi berjalan di lingkungan lokal:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+1. **Tesseract OCR Engine**
+   - Instalasi: `C:\Program Files\Tesseract-OCR\tesseract.exe`
+   - Language Data: `ind` (Indonesian) & `eng` (English).
+   - *Catatan: Wajib terdaftar di System PATH Windows.*
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. **Ghostscript & Imagick**
+   - Ghostscript diperlukan untuk render PDF.
+   - PHP Extension `imagick` harus aktif di `php.ini`.
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📂 Technical Workflow (Backend)
+Bagaimana sistem memvalidasi dokumen Taruna saat ini:
+1. **Trigger**: `ProcessDocumentOCR` dijalankan via Queue Job setelah file masuk ke storage.
+2. **Imaging**: Mengonversi PDF halaman pertama menjadi PNG 200 DPI menggunakan Imagick.
+3. **Double-Scan**: 
+   - Scan 1: Mengambil teks mentah untuk verifikasi kata kunci (Keyword Matching).
+   - Scan 2: Mengambil metadata `x_wconf` untuk kalkulasi skor kepercayaan rata-rata.
+4. **Validation**: Jika skor < 70% atau keyword tidak cocok, sistem menandai status sebagai `failed`.
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## ⚠️ Known Issues & Solutions (Windows Environment)
+- **Problem**: Error "No Output" saat menggunakan library wrapper.
+- **Solution**: Dialihkan menggunakan perintah direct `shell_exec` dengan parameter `stdout` untuk mematikan ketergantungan pada folder temporary Windows.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📅 Road Map Next Step
+- [x] Integrasi OCR Tesseract & Confidence Scoring.
+- [x] UI/UX Dashboard Upload Taruna.
+- [x] Integrasi Google Drive API.
+- [ ] Modul Verifikasi Admin (Approval Workflow).
+- [ ] Export Laporan Validasi Dokumen (PDF/Excel).
+- [ ] Convert ke Android.
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+**Lead Developer:** **Muhammad Rafli Adriansyah** *IT Staff & Simulator Lab Technician - Polimarim AMI Makassar*
