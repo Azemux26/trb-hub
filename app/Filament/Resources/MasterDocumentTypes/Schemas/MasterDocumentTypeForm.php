@@ -88,7 +88,7 @@ class MasterDocumentTypeForm
                         ->label('Kata Kunci OCR')
                         ->helperText('Isi kata kunci yang harus terdeteksi oleh OCR.')
                         ->nullable()
-                        ->separator()
+                        // ->separator(',')
                         ->splitKeys(['Tab','Enter'])
                         ->reorderable(),
                 ])

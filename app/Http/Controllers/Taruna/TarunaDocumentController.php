@@ -7,9 +7,10 @@ use App\Http\Requests\Taruna\UploadDocumentRequest;
 use App\Http\Requests\Taruna\VerifyEditAccessRequest;
 use App\Models\MasterDocumentType;
 use App\Models\TrbRegistration;
+use App\Jobs\ProcessDocumentOCR;
 use App\Services\TarunaDocumentService;
 use App\Services\TarunaRegistrationService;
-use Illuminate\Http\Request;
+
 
 class TarunaDocumentController extends Controller
 {
@@ -96,11 +97,17 @@ class TarunaDocumentController extends Controller
 
         $registration = TrbRegistration::findOrFail($id);
 
-        $this->docService->upsertDocument(
+        $document = $this->docService->upsertDocument(
             $registration,
             $documentType,
             $request->file('file')
         );
+
+        // 3. JALANKAN OCR (Saklar Otomatis)
+        // Pastikan docService->upsertDocument mengembalikan object Model TrbDocument
+        if ($document) {
+            ProcessDocumentOCR::dispatch($document); 
+        }
 
         return back()->with('status', 'Dokumen berhasil diunggah: ' . $documentType->name);
     }

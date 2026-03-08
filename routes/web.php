@@ -4,10 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Taruna\TarunaRegistrationController;
 use App\Http\Controllers\Taruna\TarunaDocumentController;
 
-// Route::get('/', function () {
-//     return view('taruna-registration');
-// });
-
 Route::name('taruna.')->group(function () {
     Route::get('/', [TarunaRegistrationController::class, 'create'])->name('register');
     Route::post('/daftar', [TarunaRegistrationController::class, 'store'])->name('store');

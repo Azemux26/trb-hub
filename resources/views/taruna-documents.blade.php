@@ -42,6 +42,9 @@
                             $allowedArr = is_array($type->allowed_mime_types) ? $type->allowed_mime_types : [];
                             $allowedText = count($allowedArr) ? implode(', ', $allowedArr) : '-';
                             $acceptAttr = count($allowedArr) ? implode(',', $allowedArr) : '';
+                            
+                            // Logika pendeteksi skor rendah
+                            $isLowConfidence = $isUploaded && $doc->ocr_confidence < 70 && $doc->ocr_status !== 'failed';
                         @endphp
 
                         <div class="col-12">
@@ -66,13 +69,28 @@
                                     </div>
 
                                     @if ($isUploaded)
-                                        <span class="badge text-bg-success">Sudah Upload</span>
+                                        @if($doc->system_validation_status == 'failed')
+                                            <span class="badge text-bg-danger">Gagal Validasi</span>
+                                        @else
+                                            <span class="badge text-bg-success">Sudah Upload</span>
+                                        @endif
                                     @else
                                         <span class="badge text-bg-light text-dark border">Belum</span>
                                     @endif
                                 </div>
 
                                 @if ($isUploaded)
+                                    {{-- Penambahan Alert Box untuk hasil scan kabur/failed --}}
+                                    @if($doc->system_validation_status == 'failed' || $isLowConfidence)
+                                        <div class="alert {{ $doc->system_validation_status == 'failed' ? 'alert-danger' : 'alert-warning' }} mt-2 mb-2 p-2 small">
+                                            <div class="fw-bold"><i class="bi bi-exclamation-triangle-fill"></i> Perhatian:</div>
+                                            {{ $doc->system_validation_message }}
+                                            @if($isLowConfidence)
+                                                (Skor: {{ round($doc->ocr_confidence, 0) }}%). Dokumen mungkin terbaca kurang jelas.
+                                            @endif
+                                        </div>
+                                    @endif
+
                                     <div class="mt-2 small">
                                         <div><span class="fw-semibold">Uploaded:</span> {{ optional($doc->uploaded_at)->toDateTimeString() }}</div>
                                         <div>
@@ -80,8 +98,8 @@
                                             <a href="{{ $doc->drive_view_url }}" target="_blank" rel="noopener">Buka</a>
                                         </div>
                                         <div class="muted">
-                                            Sistem: {{ $doc->system_validation_status }}
-                                            • OCR: {{ $doc->ocr_status }}
+                                            Sistem: <span class="{{ $doc->system_validation_status == 'failed' ? 'text-danger fw-bold' : '' }}">{{ strtoupper($doc->system_validation_status) }}</span>
+                                            • OCR: {{ $doc->ocr_status }} ({{ round($doc->ocr_confidence, 0) }}%)
                                             • Admin: {{ $doc->admin_verification_status }}
                                         </div>
                                     </div>
@@ -94,15 +112,20 @@
 
                                     <div class="row g-2 align-items-center">
                                         <div class="col-md-9">
-                                            <input class="form-control" type="file" name="file" required
+                                            <input class="form-control {{ ($isUploaded && $doc->system_validation_status == 'failed') ? 'is-invalid' : '' }}" 
+                                                   type="file" name="file" required
                                                    @if($acceptAttr) accept="{{ $acceptAttr }}" @endif>
                                             <div class="muted small mt-1">
-                                                Upload ulang akan menggantikan dokumen sebelumnya untuk jenis ini.
+                                                @if($isUploaded && $doc->system_validation_status == 'failed')
+                                                    <span class="text-danger">Mohon upload ulang foto yang lebih jelas/terang.</span>
+                                                @else
+                                                    Upload ulang akan menggantikan dokumen sebelumnya untuk jenis ini.
+                                                @endif
                                             </div>
                                         </div>
 
                                         <div class="col-md-3 d-grid">
-                                            <button class="btn btn-outline-primary btn-pill" type="submit">
+                                            <button class="btn {{ ($isUploaded && $doc->system_validation_status == 'failed') ? 'btn-danger' : 'btn-outline-primary' }} btn-pill" type="submit">
                                                 {{ $isUploaded ? 'Ganti File' : 'Upload' }}
                                             </button>
                                         </div>
