@@ -12,6 +12,7 @@ class MasterDocumentType extends Model
     protected $fillable = [
         'code',
         'name',
+        'google_drive_folder',
         'description',
         'is_required',
         'allowed_mime_types',

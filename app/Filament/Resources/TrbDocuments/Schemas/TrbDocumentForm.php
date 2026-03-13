@@ -47,11 +47,24 @@ class TrbDocumentForm
                     ->numeric(),
                 Textarea::make('ocr_text_excerpt')
                     ->columnSpanFull(),
-                TextInput::make('admin_verification_status')
+                Select::make('admin_verification_status')
+                    ->label('Status Verifikasi Admin')
+                    ->options([
+                        'pending' => 'Pending (Belum Diperiksa)',
+                        'approved' => 'Setujui (Dokumen Sah)',
+                        'rejected' => 'Tolak (Upload Ulang)',
+                    ])
                     ->required()
+                    ->native(false) // Membuat tampilan dropdown lebih modern (Filament style)
+                    ->selectablePlaceholder(false)
+                    ->prefixIcon('heroicon-m-shield-check')
                     ->default('pending'),
+
                 Textarea::make('admin_verification_note')
-                    ->columnSpanFull(),
+                    ->label('Catatan/Alasan Verifikasi')
+                    ->placeholder('Contoh: Foto KTP terlalu buram, mohon upload ulang.')
+                    ->columnSpanFull()
+                    ->helperText('Catatan ini akan dilihat oleh Taruna jika dokumen ditolak.'),
                 TextInput::make('verified_by')
                     ->numeric(),
                 DateTimePicker::make('verified_at'),

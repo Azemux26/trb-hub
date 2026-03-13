@@ -17,6 +17,11 @@ class MasterDocumentTypeForm
         return $schema->components([
             Section::make('Identitas Dokumen')
                 ->schema([
+                    TextInput::make('google_drive_folder')
+                        ->label('Nama Folder Google Drive')
+                        ->helperText('Nama folder di dalam DATA_TRB_HUB. Contoh: KTP, Surat_THT')
+                        ->placeholder('KTP')
+                        ->nullable(),
                     TextInput::make('code')
                         ->label('Code')
                         ->helperText('Huruf kecil dan underscore. Contoh: ktp, buku_pelaut')
@@ -24,7 +29,7 @@ class MasterDocumentTypeForm
                         ->maxLength(80)
                         ->regex('/^[a-z0-9_]+$/')
                         ->unique(ignoreRecord: true)
-                        ->disabled(fn ($record) => filled($record))
+                        ->disabled(fn($record) => filled($record))
                         ->dehydrated(),
 
                     TextInput::make('name')
@@ -89,7 +94,7 @@ class MasterDocumentTypeForm
                         ->helperText('Isi kata kunci yang harus terdeteksi oleh OCR.')
                         ->nullable()
                         // ->separator(',')
-                        ->splitKeys(['Tab','Enter'])
+                        ->splitKeys(['Tab', 'Enter'])
                         ->reorderable(),
                 ])
                 ->columns(2),

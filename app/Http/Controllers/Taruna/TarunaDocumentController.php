@@ -32,7 +32,7 @@ class TarunaDocumentController extends Controller
 
     public function accessForm()
     {
-        return view('taruna-documents-access');
+        return view('taruna-document-access');
     }
 
     public function accessSubmit(VerifyEditAccessRequest $request)
