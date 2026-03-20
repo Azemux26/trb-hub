@@ -246,6 +246,31 @@ $tesseractExec = '/usr/bin/tesseract';
 
 ---
 
+## 📝 Changelog
+
+### v0.3 — 20 Maret 2026
+- ✅ Export laporan PDF dengan link Google Drive per dokumen
+- ✅ Deteksi otomatis file lokal vs Google Drive di admin panel
+- ✅ Fix drive_view_url untuk dokumen yang sudah di Drive
+- ✅ Form verifikasi admin redesign (read-only info + keputusan)
+- ✅ Validasi wajib catatan jika dokumen ditolak
+- ✅ Badge status 3 kondisi di semua tabel admin
+- ✅ Label & icon menu navigasi profesional (Bahasa Indonesia)
+- ✅ Halaman Laporan PDF di sidebar Filament
+- ✅ Status dokumen real-time di halaman Taruna
+
+### v0.2 — 14 Maret 2026
+- ✅ Integrasi OCR Tesseract + confidence score real-time
+- ✅ Upload otomatis ke Google Drive setelah OCR valid
+- ✅ Custom theme Filament (navy + gold brand AMI)
+- ✅ Queue processing Laravel (ProcessDocumentOCR + UploadToGoogleDrive)
+
+### v0.1 — 17 Februari 2026
+- ✅ Arsitektur sistem & desain database (4 tabel)
+- ✅ Pendaftaran Taruna + sistem edit token tanpa login
+- ✅ Upload dokumen per jenis dengan validasi MIME & ukuran
+- ✅ Admin panel Filament dasar
+
 ## 📄 Lisensi
 
 Proyek ini dikembangkan untuk keperluan penelitian/skripsi Politeknik Maritim AMI Makassar.
