@@ -1,273 +1,251 @@
-🔍 TRB-HUB: Document Management System
-
-Current Status: Phase 2 - Automated Validation & OCR Integration (Completed)
-
-Aplikasi manajemen dokumen Taruna yang fokus pada integritas data, validasi dokumen otomatis, dan efisiensi pengelolaan dokumen melalui teknologi OCR dan penyimpanan cloud.
-
-Sistem ini memanfaatkan Tesseract OCR, Imagick, dan integrasi Google Drive API untuk melakukan validasi dokumen secara otomatis sebelum disimpan ke cloud storage.
-
-🛠 Tech Stack
-
-Backend:
-
-Laravel 12
-
-PHP 8+
-
-MySQL
-
-Libraries & Tools:
-
-Tesseract OCR
-
-Imagick
-
-Ghostscript
-
-Google Drive API
-
-Laravel Queue Worker
-
-Admin Panel:
-
-Filament
-
-🚀 Latest Progress: Automated Document Validation
-
-Saat ini aplikasi telah berhasil mengimplementasikan sistem validasi dokumen otomatis pada modul Upload Dokumen Taruna.
-
-Sistem tidak hanya menyimpan file, tetapi juga membaca isi dokumen untuk memastikan keaslian dan kualitas scan.
-
-✅ Fitur yang Sudah Berjalan
-
-Zero-Disk OCR
-Proses pembacaan teks dilakukan di memori (stdout) untuk menghindari limitasi izin akses folder pada Windows.
-
-Precision Scoring
-Implementasi ekstraksi data hOCR untuk mendapatkan skor akurasi asli dari mesin Tesseract.
-
-Multi-Format Processing
-Mendukung pemrosesan otomatis file PDF dan Image melalui integrasi Ghostscript dan Imagick.
-
-Smart UI/UX Feedback
-Antarmuka dinamis yang memberikan peringatan kepada Taruna jika hasil scan buram atau keyword tidak ditemukan.
-
-Asynchronous Queue Processing
-Proses OCR dan upload file dijalankan melalui Laravel Queue Worker untuk menjaga performa aplikasi tetap responsif.
-
-Cloud Storage Integration
-Dokumen yang lolos validasi akan diupload otomatis ke Google Drive dan file lokal akan dihapus untuk menghemat storage server.
-
-🏗 System Architecture 
-flowchart LR
-
-A[Taruna User] --> B[TRB-HUB Laravel Application]
-
-B --> C[Upload Document Module]
-C --> D[Laravel Storage Temporary]
-
-D --> E[Queue Worker]
-
-E --> F[ProcessDocumentOCR Job]
-F --> G[Tesseract OCR]
-
-G --> H[OCR Validation]
-
-H --> I{Validation Result}
-
-I -->|Valid| J[UploadToGoogleDrive Job]
-I -->|Failed| K[Admin Verification Queue]
-
-J --> L[Google Drive Storage]
-
-L --> M[Document Metadata Database]
-
-K --> M
-
-M --> N[Admin Panel Filament]
-
-Diagram ini menjelaskan bagaimana sistem melakukan:
-
-upload dokumen
-
-proses OCR
-
-validasi dokumen
-
-penyimpanan ke Google Drive
-
-🔎 OCR Processing Workflow
-flowchart TD
-
-A[Upload Document] --> B[Save File to Temporary Storage]
-
-B --> C[Queue Job: ProcessDocumentOCR]
-
-C --> D{File Type}
-
-D -->|PDF| E[Convert First Page to PNG using Imagick]
-D -->|Image| F[Use Image Directly]
-
-E --> G[Tesseract OCR Scan]
-F --> G
-
-G --> H[Extract Text]
-
-H --> I[Keyword Matching]
-
-H --> J[Confidence Score Calculation]
-
-I --> K{Validation Result}
-J --> K
-
-K -->|Valid| L[Dispatch UploadToGoogleDrive Job]
-
-K -->|Failed| M[Mark as OCR Failed]
-
-Workflow ini menunjukkan bagaimana sistem melakukan:
-
-konversi dokumen
-
-ekstraksi teks
-
-keyword validation
-
-confidence scoring
-
-flowchart TD
-
-A[Validated Document] --> B[Queue Job: UploadToGoogleDrive]
-
-B --> C[Google OAuth Authentication]
-
-C --> D[Generate Access Token using Refresh Token]
-
-D --> E[Upload File to Google Drive Folder]
-
-E --> F[Receive Google Drive File ID]
-
-F --> G[Save File Metadata to Database]
-
-G --> H[Delete Local File from Laravel Storage]
-
-Setelah dokumen berhasil diupload ke Google Drive:
-
-metadata file disimpan di database
-
-file lokal dihapus untuk menghemat storage server
-
-🛠️ Environment Setup (Required for This Progress)
-
-Karena aplikasi ini menggunakan engine eksternal, setup berikut wajib dilakukan agar fitur validasi berjalan di lingkungan lokal.
-
-1️⃣ Tesseract OCR Engine
-
-Instalasi:
-
-C:\Program Files\Tesseract-OCR\tesseract.exe
-
-Language data:
-
-ind
-eng
-
-Catatan: Wajib terdaftar di System PATH Windows.
-
-2️⃣ Ghostscript & Imagick
-
-Ghostscript digunakan untuk:
-
-render PDF → image
-
-Imagick digunakan untuk:
-
-convert PDF → PNG (200 DPI)
-
-Aktifkan extension Imagick di php.ini:
-
-extension=imagick
-3️⃣ Jalankan Queue Worker
-
-Queue worker harus berjalan agar proses OCR dapat diproses.
-
-php artisan queue:work
-📂 Technical Workflow (Backend)
-
-Bagaimana sistem memvalidasi dokumen Taruna saat ini:
-
-1️⃣ Trigger
-
-ProcessDocumentOCR dijalankan melalui Queue Job setelah file masuk ke storage.
-
-2️⃣ Imaging
-
-Mengonversi PDF halaman pertama menjadi PNG 200 DPI menggunakan Imagick.
-
-3️⃣ Double-Scan
-
-Scan 1
-Mengambil teks mentah untuk verifikasi kata kunci.
-
-Scan 2
-Mengambil metadata x_wconf untuk kalkulasi skor kepercayaan rata-rata.
-
-4️⃣ Validation
-
-Jika:
-
-confidence < 70%
-atau
-keyword tidak cocok
-
-maka status dokumen ditandai sebagai:
-
-failed
-⚠️ Known Issues & Solutions (Windows Environment)
-Problem
-
-Error "No Output" saat menggunakan library wrapper OCR.
-
-Solution
-
-Menggunakan perintah langsung:
-
-shell_exec
-
-dengan parameter stdout sehingga tidak bergantung pada folder temporary Windows.
-
-📅 Road Map Next Step
-✅ Completed
-
- Integrasi OCR Tesseract & Confidence Scoring
-
- UI/UX Dashboard Upload Taruna
-
- Integrasi Google Drive API
-
- Queue Processing untuk OCR & Upload
-
- Upload otomatis dokumen ke Google Drive
-
-🚧 Next Development
-
- Modul Verifikasi Admin (Approval Workflow)
-
- Dashboard Admin menggunakan Filament
-
- Status dokumen (OCR Failed / Waiting Verification / Approved)
-
-📌 Planned Features
-
- Export Laporan Validasi Dokumen (PDF / Spreadsheet)
-
- Notifikasi status dokumen kepada Taruna
-
- REST API untuk integrasi mobile
-
- Convert ke Android
-
-👨‍💻 Lead Developer
-
-Muhammad Rafli Adriansyah
-IT Staff & Simulator Lab Technician
-Politeknik Maritim AMI Makassar
+# TRB-HUB — Sistem Manajemen Dokumen Taruna
+
+> **Politeknik Maritim AMI Makassar**  
+> Sistem digitalisasi pengumpulan dan verifikasi dokumen Training Record Book (TRB) untuk taruna.
+
+---
+
+## 📋 Deskripsi
+
+TRB-HUB adalah sistem berbasis web yang dibangun untuk mempermudah proses pengumpulan, validasi otomatis, dan verifikasi manual dokumen taruna Politeknik Maritim AMI Makassar. Sistem ini menggunakan OCR (Optical Character Recognition) untuk memvalidasi keaslian dokumen secara otomatis sebelum diverifikasi oleh admin.
+
+---
+
+## 🛠️ Tech Stack
+
+| Komponen | Teknologi |
+|---|---|
+| Backend Framework | Laravel 12 |
+| Admin Panel | Filament v5 |
+| Frontend (Taruna) | Bootstrap 5.3 |
+| CSS Framework (Admin) | Tailwind CSS v4 |
+| Build Tool | Vite v7 |
+| OCR Engine | Tesseract OCR (64-bit) |
+| Image Processing | ImageMagick + PHP Imagick |
+| PDF Rendering | Ghostscript |
+| Cloud Storage | Google Drive API (OAuth2) |
+| PDF Export | DomPDF (barryvdh/laravel-dompdf) |
+| Queue | Laravel Queue (Database Driver) |
+| Database | MySQL |
+| PHP | ^8.2 |
+
+---
+
+## ⚙️ Persyaratan Sistem
+
+### Software Wajib
+- PHP >= 8.2 (dengan extension: `imagick`, `gd`, `pdo_mysql`)
+- Composer
+- Node.js & NPM
+- MySQL
+- **Tesseract OCR 64-bit** — [Download UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
+  - Wajib install language data: `ind` (Indonesian) + `eng` (English)
+  - Tambahkan ke System PATH: `C:\Program Files\Tesseract-OCR`
+- **Ghostscript 64-bit** — untuk membaca PDF
+- **ImageMagick** — untuk konversi PDF ke gambar
+  - Aktifkan `extension=imagick` di `php.ini`
+
+---
+
+## 🚀 Instalasi
+
+### 1. Clone Repository
+```bash
+git clone https://github.com/username/trb-hub.git
+cd trb-hub
+```
+
+### 2. Install Dependencies
+```bash
+composer install
+npm install
+```
+
+### 3. Setup Environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 4. Konfigurasi `.env`
+```env
+APP_NAME="TRB-HUB"
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=trb_hub
+DB_USERNAME=root
+DB_PASSWORD=
+
+# Google Drive OAuth2
+GOOGLE_DRIVE_CLIENT_ID=your_client_id
+GOOGLE_DRIVE_CLIENT_SECRET=your_client_secret
+GOOGLE_DRIVE_REFRESH_TOKEN=your_refresh_token
+
+QUEUE_CONNECTION=database
+```
+
+### 5. Migrasi Database
+```bash
+php artisan migrate
+```
+
+### 6. Build Assets
+```bash
+npm run build
+```
+
+### 7. Buat Admin Pertama
+```bash
+php artisan make:filament-user
+```
+
+---
+
+## 🖥️ Menjalankan Aplikasi
+
+### Development (semua service sekaligus)
+```bash
+# PowerShell — gunakan ; bukan &&
+composer run dev
+```
+
+Perintah di atas akan menjalankan:
+- `php artisan serve` — Web server
+- `php artisan queue:listen --tries=1` — Queue worker (OCR + Upload Drive)
+- `npm run dev` — Vite dev server
+
+### Production
+```bash
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Jalankan queue worker di background
+php artisan queue:work --tries=3 --daemon
+```
+
+---
+
+## 📁 Struktur Aplikasi
+
+```
+app/
+├── Filament/
+│   ├── Pages/
+│   │   └── LaporanPdf.php          ← Halaman export laporan
+│   └── Resources/
+│       ├── MasterDocumentTypes/    ← CRUD jenis dokumen
+│       ├── TrbDocuments/           ← Verifikasi dokumen taruna
+│       └── TrbRegistrations/       ← Manajemen pendaftaran taruna
+├── Http/
+│   └── Controllers/
+│       ├── Admin/
+│       │   └── LaporanController.php
+│       └── Taruna/
+│           ├── TarunaDocumentController.php
+│           └── TarunaRegistrationController.php
+├── Jobs/
+│   ├── ProcessDocumentOCR.php      ← Job OCR otomatis
+│   └── UploadToGoogleDrive.php     ← Job upload ke Drive
+├── Models/
+│   ├── MasterDocumentType.php
+│   ├── TrbDocument.php
+│   ├── TrbRegistration.php
+│   └── User.php
+└── Services/
+    ├── LaporanService.php          ← Logic generate PDF
+    ├── TarunaDocumentService.php   ← Logic upload dokumen
+    └── TarunaRegistrationService.php ← Logic pendaftaran & token
+```
+
+---
+
+## 🔄 Alur Sistem
+
+### Alur Taruna
+```
+1. Taruna mengisi form pendaftaran (identitas)
+2. Sistem generate edit token (berlaku 7 hari)
+3. Taruna upload dokumen satu per satu
+4. Sistem simpan file sementara di local storage
+5. Job OCR dijalankan otomatis (background queue)
+6. Jika OCR valid → file diupload ke Google Drive → file lokal dihapus
+7. Jika OCR gagal → taruna diminta upload ulang
+8. Admin melakukan verifikasi akhir (approve/reject)
+```
+
+### Alur Admin
+```
+1. Login melalui /admin
+2. Pantau semua dokumen di menu "Dokumen Taruna"
+3. Klik "Verifikasi" pada dokumen
+4. Lihat hasil OCR + link dokumen di Drive
+5. Pilih Setujui / Tolak + isi catatan
+6. Export laporan PDF dari menu "Laporan PDF"
+```
+
+---
+
+## 🗄️ Struktur Database
+
+| Tabel | Fungsi |
+|---|---|
+| `users` | Akun admin KAPALATI |
+| `master_document_types` | Konfigurasi jenis dokumen (OCR keywords, mime types, dll) |
+| `trb_registrations` | Data identitas taruna + edit token |
+| `trb_documents` | Dokumen taruna + hasil OCR + status verifikasi |
+
+---
+
+## 🎨 Konfigurasi Custom Theme (Filament)
+
+File theme ada di: `resources/css/filament/admin/theme.css`
+
+Warna brand:
+| Peran | Hex | Keterangan |
+|---|---|---|
+| Primary | `#1a1a7a` | Navy — dominan logo AMI |
+| Warning | `#e0c800` | Gold — dari logo AMI |
+| Danger | `#cc1a1a` | Merah |
+| Success | `#1a7a3a` | Hijau |
+| Info | `#1a5a9a` | Biru |
+
+---
+
+## 🔧 Konfigurasi Tambahan
+
+### Linux/Ubuntu Deployment
+Ganti path Tesseract di `ProcessDocumentOCR.php`:
+```php
+// Windows
+$tesseractExec = '"C:\Program Files\Tesseract-OCR\tesseract.exe"';
+
+// Linux
+$tesseractExec = '/usr/bin/tesseract';
+```
+
+### Google Drive Setup
+1. Buat project di [Google Cloud Console](https://console.cloud.google.com)
+2. Enable Google Drive API
+3. Buat OAuth2 credentials
+4. Jalankan sekali untuk mendapatkan refresh token
+5. Isi `.env` dengan credentials yang didapat
+
+---
+
+## 👥 Aktor Sistem
+
+| Aktor | Akses |
+|---|---|
+| **Taruna** | Daftar, upload dokumen, edit identitas (via token, tanpa login) |
+| **Admin KAPALATI** | Login Filament, verifikasi dokumen, regenerate token, export PDF |
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dikembangkan untuk keperluan penelitian/skripsi Politeknik Maritim AMI Makassar.

@@ -56,7 +56,7 @@ class UploadToGoogleDrive implements ShouldQueue
 
             $service = new Drive($client);
 
-            $fileName = time().'_'.$this->document->original_filename;
+            $fileName = time() . '_' . $this->document->original_filename;
 
             $fileMetadata = new DriveFile([
                 'name' => $fileName,
@@ -69,7 +69,7 @@ class UploadToGoogleDrive implements ShouldQueue
                 $fileMetadata,
                 [
                     'data' => $content,
-                    'mimeType' => File::mimeType(storage_path('app/public/'.$localPath)),
+                    'mimeType' => File::mimeType(storage_path('app/public/' . $localPath)),
                     'uploadType' => 'multipart',
                 ]
             );
@@ -78,12 +78,18 @@ class UploadToGoogleDrive implements ShouldQueue
                 'google_file_id' => $file->id
             ]);
 
+            $fileId = $file->id;
+
+            $viewUrl = "https://drive.google.com/file/d/{$fileId}/view";
+            $downloadUrl = "https://drive.google.com/uc?id={$fileId}";
+
             $this->document->update([
-                'drive_file_id' => $file->id
+                'drive_file_id' => $fileId,
+                'drive_view_url' => $viewUrl,
+                'drive_download_url' => $downloadUrl,
             ]);
 
             Storage::disk('public')->delete($localPath);
-
         } catch (\Exception $e) {
 
             Log::error('Upload Drive gagal', [

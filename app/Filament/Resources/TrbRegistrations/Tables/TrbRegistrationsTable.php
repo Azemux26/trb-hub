@@ -7,6 +7,10 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
+use App\Services\TarunaRegistrationService;
+use Filament\Actions\Action;
+use Illuminate\Support\Facades\Auth;
 
 class TrbRegistrationsTable
 {
@@ -44,15 +48,28 @@ class TrbRegistrationsTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'submitted' => 'Terdaftar',
+                        'verified'  => 'Terverifikasi',
+                        default     => 'Draft',
+                    })
+                    ->color(fn(string $state): string => match ($state) {
+                        'submitted' => 'warning',
+                        'verified'  => 'success',
+                        default     => 'gray',
+                    })
                     ->searchable(),
                 TextColumn::make('submitted_at')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('edit_token_hash')
-                    ->searchable(),
                 TextColumn::make('edit_token_expires_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Token Berlaku Hingga')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->badge()
+                    ->color(fn($state) => $state && now()->greaterThan($state) ? 'danger' : 'success'),
                 TextColumn::make('token_last_regenerated_by')
                     ->numeric()
                     ->sortable(),
@@ -73,6 +90,30 @@ class TrbRegistrationsTable
             ])
             ->recordActions([
                 EditAction::make(),
+
+                Action::make('regenerateToken')
+                    ->label('Regenerate Token')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('Indigo')
+                    ->requiresConfirmation()
+                    ->modalHeading('Regenerate Token Taruna')
+                    ->modalDescription('Token lama akan menjadi tidak berlaku.')
+                    ->action(function ($record) {
+
+                        $service = app(TarunaRegistrationService::class);
+
+                        $newToken = $service->regenerateEditToken(
+                            $record,
+                            Auth::id()
+                        );
+
+                        Notification::make()
+                            ->title('Token baru berhasil dibuat')
+                            ->body("Token baru: {$newToken}")
+                            ->success()
+                            ->persistent()
+                            ->send();
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

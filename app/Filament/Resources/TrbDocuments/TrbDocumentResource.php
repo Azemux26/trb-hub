@@ -18,9 +18,17 @@ class TrbDocumentResource extends Resource
 {
     protected static ?string $model = TrbDocument::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentCheck;
 
-    protected static ?string $recordTitleAttribute = 'name';
+    protected static ?string $modelLabel = 'Dokumen Taruna';
+
+    protected static ?string $pluralModelLabel = 'Dokumen Taruna';
+
+    protected static ?string $navigationLabel = 'Dokumen Taruna';
+
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $recordTitleAttribute = 'original_filename';
 
     public static function form(Schema $schema): Schema
     {

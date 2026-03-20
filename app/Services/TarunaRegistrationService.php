@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 class TarunaRegistrationService
 {
-     public function createRegistration(array $data): array
+    public function createRegistration(array $data): array
     {
         return DB::transaction(function () use ($data) {
             $rawToken = Str::random(64);
@@ -90,5 +90,24 @@ class TarunaRegistrationService
         ]);
 
         return $registration;
+    }
+
+    public function regenerateEditToken(TrbRegistration $registration, int $adminId): string
+    {
+        return DB::transaction(function () use ($registration, $adminId) {
+
+            // Generate token baru
+            $rawToken = Str::random(64);
+
+            $registration->update([
+                'edit_token_hash' => Hash::make($rawToken),
+                'edit_token_expires_at' => now()->addDays(7),
+
+                'token_last_regenerated_by' => $adminId,
+                'token_last_regenerated_at' => now(),
+            ]);
+
+            return $rawToken;
+        });
     }
 }

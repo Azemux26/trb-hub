@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Taruna\TarunaRegistrationController;
 use App\Http\Controllers\Taruna\TarunaDocumentController;
+use App\Http\Controllers\Admin\LaporanController;
 
 Route::name('taruna.')->group(function () {
     Route::get('/', [TarunaRegistrationController::class, 'create'])->name('register');
@@ -24,3 +25,9 @@ Route::prefix('dokumen')->name('taruna.docs.')->group(function () {
     Route::get('/', [TarunaDocumentController::class, 'index'])->name('index');
     Route::post('/{documentType}', [TarunaDocumentController::class, 'upload'])->name('upload');
 });
+
+
+// ── Laporan Admin ──────────────────────────────────────────
+Route::get('/admin/laporan/download-pdf', [
+   LaporanController::class, 'downloadPdf'
+])->name('admin.laporan.pdf')->middleware(['auth']);

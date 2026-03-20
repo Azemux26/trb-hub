@@ -18,7 +18,15 @@ class TrbRegistrationResource extends Resource
 {
     protected static ?string $model = TrbRegistration::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+
+    protected static ?string $modelLabel = 'Pendaftaran Taruna';
+
+    protected static ?string $pluralModelLabel = 'Pendaftaran Taruna';
+
+    protected static ?string $navigationLabel = 'Pendaftaran Taruna';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'name';
 

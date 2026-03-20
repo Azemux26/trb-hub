@@ -18,7 +18,15 @@ class MasterDocumentTypeResource extends Resource
 {
     protected static ?string $model = MasterDocumentType::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolderOpen;
+
+    protected static ?string $modelLabel = 'Jenis Dokumen';
+
+    protected static ?string $navigationLabel = 'Jenis Dokumen';
+
+    protected static ?string $pluralModelLabel = 'Jenis Dokumen';
+
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'name';
 
