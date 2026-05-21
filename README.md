@@ -1,17 +1,4 @@
-Sip. Untuk tahap awal freelance, menurutku **paling enak pakai 1 visual teaser saja**:
 
-* **opsi terbaik:** 1 GIF pendek 5–10 detik
-* **opsi aman:** 1 screenshot utama
-
-Kenapa? Karena repo tetap terlihat **profesional, ringan, dan teknis**, tapi tetap ada bukti visual. Detail lengkap, banyak screenshot, dan penjelasan case study kamu arahkan ke **website portfolio** atau **kontak**. Itu paling pas buat positioning awal sebagai freelancer.
-
-README kamu yang sekarang sudah punya fondasi teknis yang bagus: deskripsi sistem, stack, alur, struktur aplikasi, setup, dan changelog. Aku rapikan arahnya supaya lebih kuat untuk branding freelance tanpa membuang step-by-step cloning/install. 
-
-Di bawah ini versi final yang siap tempel.
-
----
-
-````md
 # TRB-HUB — Document Verification & TRB Management System
 
 > Web-based document submission and verification system for cadets, built to digitize the Training Record Book (TRB) workflow at Politeknik Maritim AMI Makassar.
