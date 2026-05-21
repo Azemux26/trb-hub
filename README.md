@@ -1,73 +1,274 @@
-# TRB-HUB — Sistem Manajemen Dokumen Taruna
+Sip. Untuk tahap awal freelance, menurutku **paling enak pakai 1 visual teaser saja**:
 
-> **Politeknik Maritim AMI Makassar**  
-> Sistem digitalisasi pengumpulan dan verifikasi dokumen Training Record Book (TRB) untuk taruna.
+* **opsi terbaik:** 1 GIF pendek 5–10 detik
+* **opsi aman:** 1 screenshot utama
+
+Kenapa? Karena repo tetap terlihat **profesional, ringan, dan teknis**, tapi tetap ada bukti visual. Detail lengkap, banyak screenshot, dan penjelasan case study kamu arahkan ke **website portfolio** atau **kontak**. Itu paling pas buat positioning awal sebagai freelancer.
+
+README kamu yang sekarang sudah punya fondasi teknis yang bagus: deskripsi sistem, stack, alur, struktur aplikasi, setup, dan changelog. Aku rapikan arahnya supaya lebih kuat untuk branding freelance tanpa membuang step-by-step cloning/install. 
+
+Di bawah ini versi final yang siap tempel.
 
 ---
 
-## 📋 Deskripsi
+````md
+# TRB-HUB — Document Verification & TRB Management System
 
-TRB-HUB adalah sistem berbasis web yang dibangun untuk mempermudah proses pengumpulan, validasi otomatis, dan verifikasi manual dokumen taruna Politeknik Maritim AMI Makassar. Sistem ini menggunakan OCR (Optical Character Recognition) untuk memvalidasi keaslian dokumen secara otomatis sebelum diverifikasi oleh admin.
+> Web-based document submission and verification system for cadets, built to digitize the Training Record Book (TRB) workflow at Politeknik Maritim AMI Makassar.
+
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![PHP](https://img.shields.io/badge/PHP-8.2+-blue)
+![Filament](https://img.shields.io/badge/Filament-v5-orange)
+![MySQL](https://img.shields.io/badge/Database-MySQL-informational)
+![OCR](https://img.shields.io/badge/OCR-Tesseract-success)
+![Queue](https://img.shields.io/badge/Queue-Laravel%20Queue-purple)
 
 ---
 
-## 🛠️ Tech Stack
+## Overview
 
-| Komponen | Teknologi |
-|---|---|
-| Backend Framework | Laravel 12 |
-| Admin Panel | Filament v5 |
-| Frontend (Taruna) | Bootstrap 5.3 |
-| CSS Framework (Admin) | Tailwind CSS v4 |
-| Build Tool | Vite v7 |
-| OCR Engine | Tesseract OCR (64-bit) |
+TRB-HUB is a web application designed to simplify the submission, validation, and verification of cadet documents for the Training Record Book (TRB) process.
+
+The system combines **automatic OCR-based document validation** with **manual admin verification**, creating a more structured and efficient workflow than traditional manual submission.
+
+This project was developed as part of an academic/research use case at **Politeknik Maritim AMI Makassar**.
+
+---
+
+## The Problem
+
+In a manual workflow, document submission often creates several issues:
+
+- cadets submit files without a consistent validation process
+- admins spend extra time checking document completeness and authenticity
+- file management becomes difficult when documents are scattered across local storage or manual channels
+- verification status is unclear for users
+- manual checking slows down the overall process
+
+A digital system was needed to make the process more traceable, scalable, and easier to manage.
+
+---
+
+## The Solution
+
+TRB-HUB solves this by providing:
+
+- **cadet registration flow** without requiring a full user login
+- **document upload per document type**
+- **automatic OCR validation** in the background using queue jobs
+- **Google Drive integration** for cloud-based file storage
+- **manual admin verification** for final approval or rejection
+- **PDF reporting** for administrative recap
+- **token-based edit access** so users can update their data securely within a limited period
+
+This creates a hybrid workflow:
+
+**automation for speed, admin review for control**
+
+---
+
+## Key Features
+
+### Cadet Side
+- registration form for identity data
+- token-based edit system valid for 7 days
+- upload documents by category
+- real-time document status visibility
+- re-upload flow when OCR validation fails
+
+### Admin Side
+- secure admin access via Filament panel
+- monitor all submitted documents
+- view OCR results and confidence data
+- approve or reject documents with notes
+- export PDF reports
+- manage master document types and validation rules
+
+### System Features
+- OCR processing with **Tesseract OCR**
+- background jobs using **Laravel Queue**
+- file upload workflow to **Google Drive API**
+- PDF rendering support with **Ghostscript + ImageMagick**
+- reporting with **DomPDF**
+
+---
+
+## Preview
+
+> This repository focuses on the technical implementation and setup.  
+> A full visual walkthrough and case study are available in my portfolio.
+
+<!-- Choose one of these:
+1. Use a short GIF preview
+2. Or use one main screenshot only
+-->
+
+### Option A — GIF Preview
+![TRB-HUB Demo](docs/demo/trb-hub-preview.gif)
+
+### Option B — Main Screenshot
+<!-- ![TRB-HUB Preview](docs/screenshots/trb-hub-preview-main.png) -->
+
+### Portfolio & Contact
+- **Portfolio:** https://your-portfolio-link.com
+- **Contact:** your-email@example.com
+- **Private walkthrough / collaboration:** available on request
+
+---
+
+## Technical Highlights
+
+This project is more than a CRUD app. It includes:
+
+- **asynchronous document processing**
+  - OCR validation is handled in the background using queue jobs
+- **third-party integration**
+  - Google Drive API for cloud storage
+- **document intelligence**
+  - OCR keyword validation and confidence checking
+- **role-based workflow**
+  - cadet submission flow + admin review flow
+- **report generation**
+  - PDF export for document recap
+- **production-oriented architecture**
+  - service layer, jobs, admin resources, and modular controllers
+
+---
+
+## Workflow
+
+### Cadet Workflow
+1. Cadet fills out the registration form
+2. System generates an edit token
+3. Cadet uploads required documents
+4. Files are temporarily stored locally
+5. OCR job runs in the background
+6. If OCR passes, the file is uploaded to Google Drive
+7. If OCR fails, the cadet is asked to re-upload
+8. Admin performs final verification
+
+### Admin Workflow
+1. Admin logs into `/admin`
+2. Reviews submitted documents
+3. Checks OCR result and file link
+4. Approves or rejects the document
+5. Adds notes when necessary
+6. Exports PDF reports when needed
+
+---
+
+## Architecture Snapshot
+
+```bash
+app/
+├── Filament/
+│   ├── Pages/
+│   │   └── LaporanPdf.php
+│   └── Resources/
+│       ├── MasterDocumentTypes/
+│       ├── TrbDocuments/
+│       └── TrbRegistrations/
+├── Http/
+│   └── Controllers/
+│       ├── Admin/
+│       └── Taruna/
+├── Jobs/
+│   ├── ProcessDocumentOCR.php
+│   └── UploadToGoogleDrive.php
+├── Models/
+├── Services/
+````
+
+### Important Modules
+
+* `ProcessDocumentOCR.php` → handles automatic OCR validation
+* `UploadToGoogleDrive.php` → uploads validated files to Google Drive
+* `TarunaDocumentService.php` → document submission logic
+* `TarunaRegistrationService.php` → registration and token flow
+* `LaporanService.php` → report generation logic
+
+---
+
+## Tech Stack
+
+| Layer            | Technology                |
+| ---------------- | ------------------------- |
+| Backend          | Laravel 12                |
+| Admin Panel      | Filament v5               |
+| Frontend         | Bootstrap 5.3             |
+| Admin Styling    | Tailwind CSS v4           |
+| Build Tool       | Vite v7                   |
+| OCR Engine       | Tesseract OCR             |
 | Image Processing | ImageMagick + PHP Imagick |
-| PDF Rendering | Ghostscript |
-| Cloud Storage | Google Drive API (OAuth2) |
-| PDF Export | DomPDF (barryvdh/laravel-dompdf) |
-| Queue | Laravel Queue (Database Driver) |
-| Database | MySQL |
-| PHP | ^8.2 |
+| PDF Rendering    | Ghostscript               |
+| Cloud Storage    | Google Drive API (OAuth2) |
+| PDF Export       | DomPDF                    |
+| Queue            | Laravel Queue             |
+| Database         | MySQL                     |
+| Language         | PHP 8.2+                  |
 
 ---
 
-## ⚙️ Persyaratan Sistem
+## Why This Project Matters
 
-### Software Wajib
-- PHP >= 8.2 (dengan extension: `imagick`, `gd`, `pdo_mysql`)
-- Composer
-- Node.js & NPM
-- MySQL
-- **Tesseract OCR 64-bit** — [Download UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
-  - Wajib install language data: `ind` (Indonesian) + `eng` (English)
-  - Tambahkan ke System PATH: `C:\Program Files\Tesseract-OCR`
-- **Ghostscript 64-bit** — untuk membaca PDF
-- **ImageMagick** — untuk konversi PDF ke gambar
-  - Aktifkan `extension=imagick` di `php.ini`
+This project demonstrates my ability to build:
+
+* real-world administrative systems
+* document workflow automation
+* OCR-powered validation features
+* queue-based background processing
+* cloud storage integrations
+* role-based verification dashboards
+
+It reflects the kind of system often needed by schools, campuses, offices, and internal business operations.
 
 ---
 
-## 🚀 Instalasi
+## System Requirements
+
+### Required Software
+
+* PHP >= 8.2
+  extensions: `imagick`, `gd`, `pdo_mysql`
+* Composer
+* Node.js & NPM
+* MySQL
+* **Tesseract OCR 64-bit**
+
+  * install language data: `ind` and `eng`
+  * add to system PATH
+* **Ghostscript 64-bit**
+* **ImageMagick**
+
+  * enable `extension=imagick` in `php.ini`
+
+---
+
+## Installation
 
 ### 1. Clone Repository
+
 ```bash
-git clone https://github.com/username/trb-hub.git
+git clone https://github.com/Azemux26/trb-hub.git
 cd trb-hub
 ```
 
 ### 2. Install Dependencies
+
 ```bash
 composer install
 npm install
 ```
 
 ### 3. Setup Environment
+
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Konfigurasi `.env`
+### 4. Configure `.env`
+
 ```env
 APP_NAME="TRB-HUB"
 APP_URL=http://localhost
@@ -87,139 +288,78 @@ GOOGLE_DRIVE_REFRESH_TOKEN=your_refresh_token
 QUEUE_CONNECTION=database
 ```
 
-### 5. Migrasi Database
+### 5. Run Database Migration
+
 ```bash
 php artisan migrate
 ```
 
 ### 6. Build Assets
+
 ```bash
 npm run build
 ```
 
-### 7. Buat Admin Pertama
+### 7. Create First Admin User
+
 ```bash
 php artisan make:filament-user
 ```
 
 ---
 
-## 🖥️ Menjalankan Aplikasi
+## Running the Project
 
-### Development (semua service sekaligus)
+### Development
+
 ```bash
-# PowerShell — gunakan ; bukan &&
 composer run dev
 ```
 
-Perintah di atas akan menjalankan:
-- `php artisan serve` — Web server
-- `php artisan queue:listen --tries=1` — Queue worker (OCR + Upload Drive)
-- `npm run dev` — Vite dev server
+This command runs:
+
+* `php artisan serve`
+* `php artisan queue:listen --tries=1`
+* `npm run dev`
 
 ### Production
+
 ```bash
 npm run build
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
-
-# Jalankan queue worker di background
 php artisan queue:work --tries=3 --daemon
 ```
 
 ---
 
-## 📁 Struktur Aplikasi
+## Database Structure
 
-```
-app/
-├── Filament/
-│   ├── Pages/
-│   │   └── LaporanPdf.php          ← Halaman export laporan
-│   └── Resources/
-│       ├── MasterDocumentTypes/    ← CRUD jenis dokumen
-│       ├── TrbDocuments/           ← Verifikasi dokumen taruna
-│       └── TrbRegistrations/       ← Manajemen pendaftaran taruna
-├── Http/
-│   └── Controllers/
-│       ├── Admin/
-│       │   └── LaporanController.php
-│       └── Taruna/
-│           ├── TarunaDocumentController.php
-│           └── TarunaRegistrationController.php
-├── Jobs/
-│   ├── ProcessDocumentOCR.php      ← Job OCR otomatis
-│   └── UploadToGoogleDrive.php     ← Job upload ke Drive
-├── Models/
-│   ├── MasterDocumentType.php
-│   ├── TrbDocument.php
-│   ├── TrbRegistration.php
-│   └── User.php
-└── Services/
-    ├── LaporanService.php          ← Logic generate PDF
-    ├── TarunaDocumentService.php   ← Logic upload dokumen
-    └── TarunaRegistrationService.php ← Logic pendaftaran & token
-```
+| Table                   | Purpose                                                 |
+| ----------------------- | ------------------------------------------------------- |
+| `users`                 | Admin account data                                      |
+| `master_document_types` | Document type configuration                             |
+| `trb_registrations`     | Cadet identity data and edit token                      |
+| `trb_documents`         | Uploaded documents, OCR result, and verification status |
 
 ---
 
-## 🔄 Alur Sistem
+## Actors
 
-### Alur Taruna
-```
-1. Taruna mengisi form pendaftaran (identitas)
-2. Sistem generate edit token (berlaku 7 hari)
-3. Taruna upload dokumen satu per satu
-4. Sistem simpan file sementara di local storage
-5. Job OCR dijalankan otomatis (background queue)
-6. Jika OCR valid → file diupload ke Google Drive → file lokal dihapus
-7. Jika OCR gagal → taruna diminta upload ulang
-8. Admin melakukan verifikasi akhir (approve/reject)
-```
-
-### Alur Admin
-```
-1. Login melalui /admin
-2. Pantau semua dokumen di menu "Dokumen Taruna"
-3. Klik "Verifikasi" pada dokumen
-4. Lihat hasil OCR + link dokumen di Drive
-5. Pilih Setujui / Tolak + isi catatan
-6. Export laporan PDF dari menu "Laporan PDF"
-```
+| Actor     | Access                                                            |
+| --------- | ----------------------------------------------------------------- |
+| **Cadet** | register, upload documents, edit identity using token             |
+| **Admin** | login to Filament, verify documents, regenerate token, export PDF |
 
 ---
 
-## 🗄️ Struktur Database
+## Additional Configuration
 
-| Tabel | Fungsi |
-|---|---|
-| `users` | Akun admin KAPALATI |
-| `master_document_types` | Konfigurasi jenis dokumen (OCR keywords, mime types, dll) |
-| `trb_registrations` | Data identitas taruna + edit token |
-| `trb_documents` | Dokumen taruna + hasil OCR + status verifikasi |
+### Linux / Ubuntu Deployment
 
----
+Update Tesseract path in `ProcessDocumentOCR.php`:
 
-## 🎨 Konfigurasi Custom Theme (Filament)
-
-File theme ada di: `resources/css/filament/admin/theme.css`
-
-Warna brand:
-| Peran | Hex | Keterangan |
-|---|---|---|
-| Primary | `#1a1a7a` | Navy — dominan logo AMI |
-| Warning | `#e0c800` | Gold — dari logo AMI |
-| Danger | `#cc1a1a` | Merah |
-| Success | `#1a7a3a` | Hijau |
-| Info | `#1a5a9a` | Biru |
-
----
-
-## 🔧 Konfigurasi Tambahan
-
-### Linux/Ubuntu Deployment
-Ganti path Tesseract di `ProcessDocumentOCR.php`:
 ```php
 // Windows
 $tesseractExec = '"C:\Program Files\Tesseract-OCR\tesseract.exe"';
@@ -229,48 +369,85 @@ $tesseractExec = '/usr/bin/tesseract';
 ```
 
 ### Google Drive Setup
-1. Buat project di [Google Cloud Console](https://console.cloud.google.com)
-2. Enable Google Drive API
-3. Buat OAuth2 credentials
-4. Jalankan sekali untuk mendapatkan refresh token
-5. Isi `.env` dengan credentials yang didapat
+
+1. create a project in Google Cloud Console
+2. enable Google Drive API
+3. create OAuth2 credentials
+4. generate a refresh token
+5. fill the `.env` file with the credentials
 
 ---
 
-## 👥 Aktor Sistem
+## Challenges I Solved
 
-| Aktor | Akses |
-|---|---|
-| **Taruna** | Daftar, upload dokumen, edit identitas (via token, tanpa login) |
-| **Admin KAPALATI** | Login Filament, verifikasi dokumen, regenerate token, export PDF |
+Some of the more interesting technical challenges in this project:
+
+* converting uploaded PDF files into a format suitable for OCR
+* running OCR processing asynchronously without blocking user flow
+* separating temporary local storage from cloud storage flow
+* designing a verification process that combines automation and manual review
+* building admin tools that remain practical for real operational use
 
 ---
 
-## 📝 Changelog
+## Future Improvements
 
-### v0.3 — 20 Maret 2026
-- ✅ Export laporan PDF dengan link Google Drive per dokumen
-- ✅ Deteksi otomatis file lokal vs Google Drive di admin panel
-- ✅ Fix drive_view_url untuk dokumen yang sudah di Drive
-- ✅ Form verifikasi admin redesign (read-only info + keputusan)
-- ✅ Validasi wajib catatan jika dokumen ditolak
-- ✅ Badge status 3 kondisi di semua tabel admin
-- ✅ Label & icon menu navigasi profesional (Bahasa Indonesia)
-- ✅ Halaman Laporan PDF di sidebar Filament
-- ✅ Status dokumen real-time di halaman Taruna
+* dashboard analytics for document completion rates
+* email or WhatsApp notifications
+* better OCR rule customization per document type
+* audit trail for admin verification activity
+* multi-institution support
 
-### v0.2 — 14 Maret 2026
-- ✅ Integrasi OCR Tesseract + confidence score real-time
-- ✅ Upload otomatis ke Google Drive setelah OCR valid
-- ✅ Custom theme Filament (navy + gold brand AMI)
-- ✅ Queue processing Laravel (ProcessDocumentOCR + UploadToGoogleDrive)
+---
 
-### v0.1 — 17 Februari 2026
-- ✅ Arsitektur sistem & desain database (4 tabel)
-- ✅ Pendaftaran Taruna + sistem edit token tanpa login
-- ✅ Upload dokumen per jenis dengan validasi MIME & ukuran
-- ✅ Admin panel Filament dasar
+## Changelog
 
-## 📄 Lisensi
+### v0.3 — 20 March 2026
 
-Proyek ini dikembangkan untuk keperluan penelitian/skripsi Politeknik Maritim AMI Makassar.
+* PDF report export with Google Drive links
+* detection for local vs Drive file sources
+* improved admin verification form
+* rejection notes validation
+* improved status badges and navigation labels
+* real-time document status on cadet page
+
+### v0.2 — 14 March 2026
+
+* OCR integration with confidence score
+* automatic upload to Google Drive after OCR validation
+* custom Filament admin theme
+* Laravel queue processing for OCR + Drive upload
+
+### v0.1 — 17 February 2026
+
+* initial system architecture and database design
+* cadet registration with edit token
+* document upload per type
+* base Filament admin panel
+
+---
+
+## Author
+
+**Rafli**
+Backend Web Developer focused on Laravel-based information systems, document workflows, and admin dashboards.
+
+* GitHub: [https://github.com/Azemux26](https://github.com/Azemux26)
+* Portfolio: [https://your-portfolio-link.com](https://your-portfolio-link.com)
+* Email: [your-email@example.com](mailto:your-email@example.com)
+
+---
+
+## License
+
+This project was developed for academic/research purposes at Politeknik Maritim AMI Makassar.
+
+````
+
+
+
+
+
+
+
+
